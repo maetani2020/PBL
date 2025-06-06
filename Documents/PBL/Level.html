@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>難易度設定</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* フォントを「Inter」に設定するよ。見やすいフォントだね */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f0f0; /* 背景色を少し明るくするよ */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* 画面いっぱいに表示されるようにするよ */
+            margin: 0;
+            padding: 20px; /* 少し余白を持たせるよ */
+            box-sizing: border-box; /* パディングを含めて要素の幅を計算するよ */
+        }
+        /* コンテナの最大幅を設定して、大きくなりすぎないようにするよ */
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+        /* 各難易度ボタンのスタイルを調整するよ */
+        .difficulty-button {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* ホバー時のアニメーション */
+        }
+        .difficulty-button:hover {
+            transform: translateY(-3px); /* 少し上に浮き上がるようにするよ */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* 影を濃くするよ */
+        }
+        .difficulty-button.selected {
+            border-color: #3b82f6; /* 選択されたボタンのボーダー色 */
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5); /* 選択時の強調表示 */
+        }
+
+        /* ノーマルモードのスタイルにグラデーションと濃い枠線を追加するよ */
+        #normalMode {
+            background-color: transparent; /* グラデーションを使うので背景色は透明に */
+            background-image: linear-gradient(to bottom, #DBEAFE, #BFDBFE); /* 薄い青から少し濃い青へのグラデーション */
+            border: 2px solid #2563EB; /* Tailwindのblue-600相当で少し濃い青の枠線 */
+            border-radius: 0.5rem; /* 角丸を維持するよ */
+        }
+        #normalMode span {
+            color: #1D4ED8 !important; /* テキストの色（濃い青） */
+            text-shadow: none;
+        }
+
+        /* ハードモードのスタイルにグラデーションと濃い枠線を追加するよ */
+        #hardMode {
+            background-color: transparent; /* グラデーションを使うので背景色は透明に */
+            background-image: linear-gradient(to bottom, #FEE2E2, #FECACA); /* 薄い赤から少し濃い赤へのグラデーション */
+            border: 2px solid #DC2626; /* Tailwindのred-600相当で少し濃い赤の枠線 */
+            border-radius: 0.5rem; /* 角丸を維持するよ */
+        }
+        #hardMode span {
+            color: #B91C1C !important; /* テキストの色（濃い赤） */
+            text-shadow: none;
+        }
+
+        /* クレイジーモードのボタンにギザギザの枠をCSSで生成するよ */
+        #crazyMode {
+            /* 枠の中の色を#ba55d3に設定するよ */
+            background-color: #ba55d3;
+            border-radius: 0; /* ギザギザにするので角丸は無効にするよ */
+            border: none; /* デフォルトのボーダーは不要 */
+            overflow: hidden; /* はみ出しを隠す */
+            /* padding: 10px; を削除したよ！これでdifficulty-buttonのp-6が適用されるよ */
+            box-sizing: border-box; /* パディングを含めて要素の幅を計算するよ */
+
+            /* linear-gradientを組み合わせて四辺にギザギザの枠を作るよ */
+            background-image:
+                /* 上辺のギザギザ */
+                linear-gradient(45deg, transparent 75%, #9400d3 75%, #7A00B0 100%),
+                linear-gradient(-45deg, transparent 75%, #9400d3 75%, #7A00B0 100%),
+                /* 下辺のギザギザ */
+                linear-gradient(45deg, #9400d3 0%, #7A00B0 25%, transparent 25%),
+                linear-gradient(-45deg, #9400d3 0%, #7A00B0 25%, transparent 25%),
+                /* 左辺のギザギザ */
+                linear-gradient(135deg, transparent 75%, #9400d3 75%, #7A00B0 100%),
+                linear-gradient(-135deg, transparent 75%, #9400d3 75%, #7A00B0 100%),
+                /* 右辺のギザギザ */
+                linear-gradient(135deg, #9400d3 0%, #7A00B0 25%, transparent 25%),
+                linear-gradient(-135deg, #9400d3 0%, #7A00B0 25%, transparent 25%);
+
+            /* ギザギザのサイズを設定するよ */
+            background-size: 20px 20px; /* ギザギザの1つの山と谷のサイズ */
+
+            /* ギザギザの繰り返しと位置を設定するよ */
+            background-repeat: repeat-x, repeat-x, repeat-x, repeat-x, repeat-y, repeat-y, repeat-y, repeat-y;
+            background-position:
+                top left, top right, /* 上辺 */
+                bottom left, bottom right, /* 下辺 */
+                top left, bottom left, /* 左辺 */
+                top right, bottom right; /* 右辺 */
+        }
+        /* クレイジーモードのテキストの色を白に上書きするよ */
+        #crazyMode span {
+            color: white !important; /* Tailwindのデフォルトを上書きするために!importantを使うよ */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7); /* 画像によっては影をつけてテキストを見やすくするよ */
+        }
+    </style>
+</head>
+<body>
+    <div class="container bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+        <div class="flex justify-start mb-6">
+            <a href = "start.html"><button id="backButton" class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition duration-200 ease-in-out shadow-sm">
+                &lt; 戻る
+            </button></a>
+        </div>
+
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">難易度設定</h1>
+
+        <div class="space-y-6">
+            <button id="normalMode" class="difficulty-button w-full p-6 text-left cursor-pointer flex flex-col justify-center items-center text-center shadow-md">
+                <span class="text-2xl font-bold mb-2">ノーマルモード</span>
+                <span class="text-lg text-blue-700">優しいお客さん</span>
+            </button>
+
+            <button id="hardMode" class="difficulty-button w-full p-6 text-left cursor-pointer flex flex-col justify-center items-center text-center shadow-md">
+                <span class="text-2xl font-bold mb-2">ハードモード</span>
+                <span class="text-lg text-red-700">厳しめなお客さん</span>
+            </button>
+
+            <button id="crazyMode" class="difficulty-button w-full p-6 text-left cursor-pointer flex flex-col justify-center items-center text-center shadow-md">
+                <span class="text-2xl font-bold mb-2">クレイジーモード</span>
+                <span class="text-lg">イカれたお客さん</span>
+            </button>
+        </div>
+
+        </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const normalModeButton = document.getElementById('normalMode');
+            const hardModeButton = document.getElementById('hardMode');
+            const crazyModeButton = document.getElementById('crazyMode');
+            const backButton = document.getElementById('backButton');
+
+            // 難易度ボタンがクリックされた時の処理だよ
+            const selectDifficulty = (button, difficultyName) => {
+                // まず全てのボタンから 'selected' クラスを削除するよ
+                [normalModeButton, hardModeButton, crazyModeButton].forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                // クリックされたボタンに 'selected' クラスを追加するよ
+                button.classList.add('selected');
+
+                // 選択された難易度をコンソールに表示するよ（実際にはここでゲームの難易度を設定する処理を入れるよ）
+                console.log(`${difficultyName} が選択されました。`);
+            };
+
+            // 各ボタンにクリックイベントリスナーを追加するよ
+            normalModeButton.addEventListener('click', () => selectDifficulty(normalModeButton, 'ノーマルモード'));
+            hardModeButton.addEventListener('click', () => selectDifficulty(hardModeButton, 'ハードモード'));
+            crazyModeButton.addEventListener('click', () => selectDifficulty(crazyModeButton, 'クレイジーモード'));
+
+            // 戻るボタンがクリックされた時の処理だよ
+            backButton.addEventListener('click', () => {
+                console.log('戻るボタンがクリックされました。');
+                alertMessage('前の画面に戻ります。', 'info'); // カスタムアラートを表示
+            });
+
+            // カスタムアラートメッセージを表示する関数だよ
+            function alertMessage(message, type) {
+                const alertBox = document.createElement('div');
+                alertBox.className = `fixed bottom-4 right-4 p-4 rounded-lg shadow-lg text-white z-50`;
+                if (type === 'info') {
+                    alertBox.classList.add('bg-blue-500');
+                } else if (type === 'success') {
+                    alertBox.classList.add('bg-green-500');
+                } else if (type === 'error') {
+                    alertBox.classList.add('bg-red-500');
+                }
+                alertBox.textContent = message;
+                document.body.appendChild(alertBox);
+
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 3000); // 3秒後にアラートを消すよ
+            }
+        });
+    </script>
+</body>
+</html>

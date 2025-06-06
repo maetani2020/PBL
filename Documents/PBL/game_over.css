@@ -1,0 +1,27 @@
+/* フォントを「Inter」に設定するよ。見やすいフォントだね */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f0f0; /* 背景色を少し明るくするよ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* 画面いっぱいに表示されるようにするよ */
+    margin: 0;
+    padding: 20px; /* 少し余白を持たせるよ */
+    box-sizing: border-box; /* パディングを含めて要素の幅を計算するよ */
+}
+/* コンテナの最大幅を設定して、大きくなりすぎないようにするよ */
+.container {
+    max-width: 600px;
+    width: 100%;
+}
+/* 各ボタンのスタイルを調整するよ */
+.action-button {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* ホバー時のアニメーション */
+    border-radius: 0.75rem; /* 角丸を適用 */
+    /* グラデーションと枠線を追加するために、Tailwindのクラスを使うよ */
+}
+.action-button:hover {
+    transform: translateY(-3px); /* 少し上に浮き上がるようにするよ */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* 影を濃くするよ */
+}

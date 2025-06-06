@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お客様を怒らせてしまった...</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* フォントを「Inter」に設定するよ。見やすいフォントだね */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f0f0; /* 背景色を少し明るくするよ */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* 画面いっぱいに表示されるようにするよ */
+            margin: 0;
+            padding: 20px; /* 少し余白を持たせるよ */
+            box-sizing: border-box; /* パディングを含めて要素の幅を計算するよ */
+        }
+        /* コンテナの最大幅を設定して、大きくなりすぎないようにするよ */
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+        /* 各ボタンのスタイルを調整するよ */
+        .action-button {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* ホバー時のアニメーション */
+            border-radius: 0.75rem; /* 角丸を適用 */
+            /* グラデーションと枠線を追加するために、Tailwindのクラスを使うよ */
+        }
+        .action-button:hover {
+            transform: translateY(-3px); /* 少し上に浮き上がるようにするよ */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* 影を濃くするよ */
+        }
+    </style>
+</head>
+<body>
+    <div class="container bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+        <!-- <div class="flex justify-start mb-6">
+            <button id="backButton" class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition duration-200 ease-in-out shadow-sm">
+                &lt; 戻る
+            </button>
+        </div> -->
+
+        <h1 id="randomMessage" class="text-3xl font-bold text-center text-gray-800 mb-8">お客様を怒らせてしまった...</h1>
+
+        <div class="space-y-6">
+            <button id="doAgainButton" class="action-button w-full p-6 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold text-2xl shadow-md hover:from-blue-700 hover:to-blue-500 border-4 border-blue-700">
+                もう一度やる
+            </button>
+
+            <button id="differentPatternButton" class="action-button w-full p-6 bg-gradient-to-r from-orange-600 to-orange-400 text-white font-bold text-2xl shadow-md hover:from-orange-700 hover:to-orange-500 border-4 border-orange-700">
+             難易度を変更 
+            </button> 
+
+            <button id="homeButton" class="action-button w-full p-6 bg-gradient-to-r from-purple-600 to-purple-400 text-white font-bold text-2xl shadow-md hover:from-purple-700 hover:to-purple-500 border-4 border-purple-700">
+                タイトルに戻る
+            </button>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // ランダムメッセージの表示
+        const messages = [
+        "お客様を怒らせてしまった...",
+        "対応を間違えてしまったかも...",
+        "お客様、めちゃくちゃ怒ってる...",
+        "店長「お前、クビだ」",
+        "事態が悪化してしまった...",
+        "店の評価が☆１になってしまった..."
+        ];
+        const messageElement = document.getElementById('randomMessage');
+        const randomIndex = Math.floor(Math.random() * messages.length);
+        messageElement.textContent = messages[randomIndex];
+
+        // 各ボタンの処理
+        const doAgainButton = document.getElementById('doAgainButton');
+        const differentPatternButton = document.getElementById('differentPatternButton');
+        const homeButton = document.getElementById('homeButton');
+
+        doAgainButton.addEventListener('click', () => {
+            console.log('「もう一度やる」が選択されました。');
+        });
+
+        differentPatternButton.addEventListener('click', () => {
+            console.log('「違うパターンでやる」が選択されました。');
+            window.location.href = "Level.html";
+        });
+
+        homeButton.addEventListener('click', () => {
+            console.log('「ホーム画面に戻る」が選択されました。');
+            window.location.href = "start.html";
+        });
+    });
+</script>
+</body>
+</html>
