@@ -81,12 +81,12 @@
 
         /* お客様アイコンの画像スタイル */
         .customer-icon-image {
-            width: 96px; /* 幅を固定 */
-            height: 96px; /* 高さを固定 */
-            border-radius: 50%; /* 丸い形にする */
+            width: 144px; /* 幅を1.5倍に拡大 (96px * 1.5) */
+            height: 144px; /* 高さを1.5倍に拡大 (96px * 1.5) */
+            border-radius: 0; /* 丸い形ではなく四角形にする */
             object-fit: cover; /* 画像がはみ出さないように調整 */
             margin-bottom: 1rem;
-            border: 3px solid #cbd5e1; /* 軽いボーダーを追加 */
+            /* border: 3px solid #cbd5e1; */ /* アイコンの線を削除 */
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 影を追加 */
         }
 
@@ -218,6 +218,57 @@
             transform: translateY(0);
         }
 
+        /* 設定モーダル */
+        .settings-modal {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            z-index: 1001; /* モーダルを他の要素より前面に */
+            position: relative; /* 閉じるボタンの配置のため */
+        }
+        .settings-modal input[type="range"] {
+            -webkit-appearance: none; /* デフォルトのスタイルをリセット */
+            height: 10px; /* スライダーの高さ */
+            background: #d1d5db; /* スライダーの背景色 (gray-300) */
+            border-radius: 5px;
+            outline: none;
+            transition: opacity .2s;
+            flex-grow: 1; /* スライダーが利用可能なスペースを埋める */
+        }
+        .settings-modal input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px; /* サムの幅 */
+            height: 20px; /* サムの高さ */
+            background: #3b82f6; /* サムの色 (blue-500) */
+            border-radius: 50%; /* サムを丸くする */
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .settings-modal input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        /* スライダーと数値表示のコンテナ */
+        .volume-control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem; /* 要素間のスペース */
+        }
+        .volume-value {
+            font-weight: bold;
+            color: #334155;
+            min-width: 40px; /* 数値表示の最小幅を確保 */
+            text-align: right;
+        }
+        
         /* レスポンシブデザインの調整 */
         @media (max-width: 768px) {
             .status-bar {
@@ -229,8 +280,8 @@
                 font-size: 1.25rem; /* フォントサイズを少し小さく */
             }
             .customer-icon-image {
-                width: 64px; /* アイコンサイズを小さく */
-                height: 64px;
+                width: 96px; /* アイコンサイズを小さく (144px * 0.66) */
+                height: 96px;
             }
             .message-box {
                 font-size: 1rem; /* メッセージフォントサイズを小さく */
@@ -251,10 +302,16 @@
     <div class="game-container">
         <!-- 画面上部のステータスバー -->
         <div class="status-bar">
-            <!-- 残り時間 -->
-            <div class="timer">
-                <i class="far fa-clock"></i> <!-- 時計アイコン -->
-                <span id="gameTimer">5:00</span>
+            <div class="flex items-center gap-2">
+                <!-- 設定ボタン（三点リーダー） -->
+                <button id="settingsButton" class="text-gray-500 hover:text-gray-700 text-2xl font-bold p-1 rounded-full hover:bg-gray-200 transition duration-200">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
+                <!-- 残り時間 -->
+                <div class="timer">
+                    <i class="far fa-clock"></i> <!-- 時計アイコン -->
+                    <span id="gameTimer">5:00</span>
+                </div>
             </div>
             <!-- クレーム内容 -->
             <div class="complaint-text">
@@ -268,9 +325,9 @@
 
         <!-- お客様表示エリア -->
         <div class="customer-area">
+            <p class="text-xl font-semibold text-gray-700">お客様</p>
             <!-- お客様アイコン画像 (ランダムで変わるよ) -->
             <img id="customerImage" class="customer-icon-image" alt="Customer Image">
-            <p class="text-xl font-semibold text-gray-700">お客様</p>
         </div>
 
         <!-- メッセージ表示エリア (履歴) -->
@@ -292,6 +349,34 @@
         </div>
     </div>
 
+    <!-- 設定モーダル -->
+    <div id="settingsModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden z-50">
+        <div class="settings-modal">
+            <button id="closeSettings" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">設定</h2>
+
+            <div class="space-y-6">
+                <div>
+                    <label for="bgmVolume" class="block text-gray-700 text-lg font-semibold mb-2">BGM 音量</label>
+                    <div class="volume-control-group">
+                        <input type="range" id="bgmVolume" min="0" max="1" step="0.01" value="0.5" class="w-full h-3 bg-blue-100 rounded-lg appearance-none cursor-pointer range-lg accent-blue-500">
+                        <span id="bgmVolumeDisplay" class="volume-value">50</span>
+                    </div>
+                </div>
+                <div>
+                    <label for="seVolume" class="block text-gray-700 text-lg font-semibold mb-2">SE 音量</label>
+                    <div class="volume-control-group">
+                        <input type="range" id="seVolume" min="0" max="1" step="0.01" value="0.5" class="w-full h-3 bg-blue-100 rounded-lg appearance-none cursor-pointer range-lg accent-blue-500">
+                        <span id="seVolumeDisplay" class="volume-value">50</span>
+                    </div>
+                </div>
+                <button id="giveUpButton" class="w-full py-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition duration-200 shadow-md">
+                    あきらめる
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const gameTimerDisplay = document.getElementById('gameTimer');
@@ -303,6 +388,16 @@
             const loadingIndicator = document.getElementById('loadingIndicator');
             const getHintButton = document.getElementById('getHintButton'); // ヒントボタンの要素を取得
             const customerImage = document.getElementById('customerImage'); // お客様の画像要素を取得
+
+            // 設定モーダル関連の要素
+            const settingsButton = document.getElementById('settingsButton');
+            const settingsModal = document.getElementById('settingsModal');
+            const closeSettingsButton = document.getElementById('closeSettings');
+            const bgmVolumeControl = document.getElementById('bgmVolume');
+            const seVolumeControl = document.getElementById('seVolume');
+            const giveUpButton = document.getElementById('giveUpButton');
+            const bgmVolumeDisplay = document.getElementById('bgmVolumeDisplay'); // BGM音量表示要素
+            const seVolumeDisplay = document.getElementById('seVolumeDisplay');   // SE音量表示要素
 
             // Gemini APIキー（Canvas環境で自動的に設定されるため、ここでは空文字列）
             const API_KEY = "";
@@ -544,6 +639,22 @@
                 };
             }
 
+            // Audio objects for BGM and SE (can be extended with actual audio files)
+            const bgmAudio = new Audio(); // Placeholder for BGM
+            bgmAudio.loop = true; // Loop BGM
+            bgmAudio.volume = parseFloat(localStorage.getItem('bgmVolume') || 0.5); // Load saved volume or default
+
+            const seAudio = new Audio(); // Placeholder for SE
+            seAudio.volume = parseFloat(localStorage.getItem('seVolume') || 0.5); // Load saved volume or default
+
+            // スライダーと表示の初期値を設定する関数
+            const updateVolumeDisplays = () => {
+                bgmVolumeControl.value = bgmAudio.volume;
+                seVolumeControl.value = seAudio.volume;
+                bgmVolumeDisplay.textContent = Math.round(bgmAudio.volume * 100);
+                seVolumeDisplay.textContent = Math.round(seAudio.volume * 100);
+            };
+
             // ゲーム開始時の初期化
             async function initializeGameConversation() {
                 // ランダムなクレーム内容を設定
@@ -565,6 +676,10 @@
                     role: "model",
                     parts: [{ text: generatedMessage }]
                 });
+
+                // BGMの再生を開始 (ユーザーインタラクション後に自動再生を試みる)
+                // bgmAudio.src = 'your-bgm-file.mp3'; // 実際のBGMファイルパスを設定してください
+                // bgmAudio.play().catch(e => console.log("BGM playback blocked (needs user interaction):", e));
             }
 
             // 送信ボタンがクリックされた時の処理だよ
@@ -598,6 +713,53 @@
             // ヒントボタンがクリックされた時の処理だよ
             getHintButton.addEventListener('click', getGeminiHint);
 
+            // 設定ボタンがクリックされた時の処理
+            settingsButton.addEventListener('click', () => {
+                settingsModal.classList.remove('hidden');
+                updateVolumeDisplays(); // モーダル表示時に音量表示を更新
+            });
+
+            // 設定モーダルの閉じるボタンがクリックされた時の処理
+            closeSettingsButton.addEventListener('click', () => {
+                settingsModal.classList.add('hidden');
+            });
+
+            // BGM音量スライダーの変更イベント
+            bgmVolumeControl.addEventListener('input', (event) => {
+                const volume = parseFloat(event.target.value);
+                bgmAudio.volume = volume;
+                localStorage.setItem('bgmVolume', volume); // 音量をローカルストレージに保存
+                bgmVolumeDisplay.textContent = Math.round(volume * 100); // 0-100で表示
+                console.log('BGM Volume:', bgmAudio.volume);
+            });
+
+            // SE音量スライダーの変更イベント
+            seVolumeControl.addEventListener('input', (event) => {
+                const volume = parseFloat(event.target.value);
+                seAudio.volume = volume;
+                localStorage.setItem('seVolume', volume); // 音量をローカルストレージに保存
+                seVolumeDisplay.textContent = Math.round(volume * 100); // 0-100で表示
+                // SEの音量テストのために、ここで短いSEを鳴らすこともできるよ
+                // seAudio.src = 'your-se-file.mp3'; // 実際のSEファイルパスを設定してください
+                // seAudio.play().catch(e => console.log("SE playback blocked or failed:", e));
+                console.log('SE Volume:', seAudio.volume);
+            });
+
+            // あきらめるボタンがクリックされた時の処理
+            giveUpButton.addEventListener('click', () => {
+                showAlert('ゲームをあきらめます...', 'error');
+                clearInterval(gameInterval); // ゲームタイマーを停止
+                setTimeout(() => {
+                    window.location.href = getRelativePath('game_over.html');
+                }, 1500); // 少し待ってからゲームオーバー画面へ遷移
+            });
+
+            // ブラウザの自動再生ポリシーに対応するため、初回ユーザーインタラクションでBGMを再生開始
+            document.body.addEventListener('click', () => {
+                // if (bgmAudio.src && bgmAudio.paused) {
+                //     bgmAudio.play().catch(e => console.log("BGM playback blocked after interaction:", e));
+                // }
+            }, { once: true }); // 一度だけ実行
 
             // エンターキーでメッセージを送信できるようにするよ
             myMessageInput.addEventListener('keypress', (event) => {
@@ -611,6 +773,7 @@
             updateLifeIcons(); // 初期HP表示
             gameInterval = setInterval(updateTimer, 1000); // タイマー開始
             initializeGameConversation(); // 会話開始
+            updateVolumeDisplays(); // 初回ロード時にも音量表示を更新
         });
     </script>
 </body>
