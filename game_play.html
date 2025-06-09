@@ -79,11 +79,15 @@
             flex-shrink: 0; /* 縮まないようにする */
         }
 
-        /* お客様アイコン */
-        .customer-icon {
-            font-size: 6rem; /* 大きめのアイコン */
-            color: #475569; /* ダークグレー */
+        /* お客様アイコンの画像スタイル */
+        .customer-icon-image {
+            width: 96px; /* 幅を固定 */
+            height: 96px; /* 高さを固定 */
+            border-radius: 50%; /* 丸い形にする */
+            object-fit: cover; /* 画像がはみ出さないように調整 */
             margin-bottom: 1rem;
+            border: 3px solid #cbd5e1; /* 軽いボーダーを追加 */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 影を追加 */
         }
 
         /* メッセージ表示エリア (履歴) */
@@ -224,8 +228,9 @@
             .timer, .complaint-text, .life-icons {
                 font-size: 1.25rem; /* フォントサイズを少し小さく */
             }
-            .customer-icon {
-                font-size: 4rem; /* アイコンサイズを小さく */
+            .customer-icon-image {
+                width: 64px; /* アイコンサイズを小さく */
+                height: 64px;
             }
             .message-box {
                 font-size: 1rem; /* メッセージフォントサイズを小さく */
@@ -263,8 +268,8 @@
 
         <!-- お客様表示エリア -->
         <div class="customer-area">
-            <!-- シンプルなお客様アイコン (顔と怒りマーク) -->
-            <i class="fas fa-frown customer-icon"></i> <!-- 眉をひそめた顔 -->
+            <!-- お客様アイコン画像 (ランダムで変わるよ) -->
+            <img id="customerImage" class="customer-icon-image" alt="Customer Image">
             <p class="text-xl font-semibold text-gray-700">お客様</p>
         </div>
 
@@ -297,6 +302,7 @@
             const complaintTextDisplay = document.getElementById('complaintText'); // ID名を変更
             const loadingIndicator = document.getElementById('loadingIndicator');
             const getHintButton = document.getElementById('getHintButton'); // ヒントボタンの要素を取得
+            const customerImage = document.getElementById('customerImage'); // お客様の画像要素を取得
 
             // Gemini APIキー（Canvas環境で自動的に設定されるため、ここでは空文字列）
             const API_KEY = "";
@@ -319,6 +325,16 @@
                 "隣の席がうるさい！"
             ];
             let currentComplaint = ""; // 現在のクレーム内容
+
+            // お客様のアイコン画像のリスト (例: images/icon1.png, images/icon2.png など)
+            // これらの画像ファイルは、このHTMLファイルと同じ階層にある'images'ディレクトリに配置してください。
+            const customerImageList = [
+                'images/icon1.png', // お客様のアイコン画像1
+                'images/icon2.png', // お客様のアイコン画像2
+                'images/icon3.png',  // お客様のアイコン画像3
+                'images/icon4.png', // お客様のアイコン画像4
+                'images/icon5.png'  // お客様のアイコン画像5
+            ];
 
             // 現在のURLからパスを構築するヘルパー関数
             function getRelativePath(targetFile) {
@@ -517,12 +533,25 @@
                 }
             }
 
+            // お客様アイコン画像をランダムに設定する関数
+            function setRandomCustomerImage() {
+                const randomIndex = Math.floor(Math.random() * customerImageList.length);
+                const imageUrl = customerImageList[randomIndex];
+                customerImage.src = imageUrl;
+                customerImage.onerror = () => { // 画像の読み込みに失敗した場合のフォールバック
+                    customerImage.src = 'https://placehold.co/96x96/f0f0f0/808080?text=Error'; // エラー時のプレースホルダー画像
+                    console.error('Failed to load customer image:', imageUrl);
+                };
+            }
 
             // ゲーム開始時の初期化
             async function initializeGameConversation() {
                 // ランダムなクレーム内容を設定
                 currentComplaint = complaintList[Math.floor(Math.random() * complaintList.length)];
                 complaintTextDisplay.textContent = currentComplaint; // 画面に表示
+
+                // お客様アイコン画像をランダムに設定
+                setRandomCustomerImage();
 
                 // 初期プロンプトとしてクレーム内容を追加するよ
                 chatHistory.push({
