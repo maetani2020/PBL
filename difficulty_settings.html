@@ -6,89 +6,74 @@
     <title>難易度設定</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* フォントを「Inter」に設定するよ。見やすいフォントだね */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f0f0; /* 背景色を少し明るくするよ */
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* 画面いっぱいに表示されるようにするよ */
+            min-height: 100vh;
             margin: 0;
-            padding: 20px; /* 少し余白を持たせるよ */
-            box-sizing: border-box; /* パディングを含めて要素の幅を計算するよ */
+            padding: 20px;
+            box-sizing: border-box; 
         }
-        /* コンテナの最大幅を設定して、大きくなりすぎないようにするよ */
         .container {
             max-width: 600px;
             width: 100%;
         }
-        /* 各難易度ボタンのスタイルを調整するよ */
         .difficulty-button {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* ホバー時のアニメーション */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; 
         }
         .difficulty-button:hover {
-            transform: translateY(-3px); /* 少し上に浮き上がるようにするよ */
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* 影を濃くするよ */
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); 
         }
         .difficulty-button.selected {
-            border-color: #3b82f6; /* 選択されたボタンのボーダー色 */
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5); /* 選択時の強調表示 */
+            border-color: #3b82f6; 
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5); 
         }
 
-        /* ノーマルモードのスタイルにグラデーションと濃い枠線を追加するよ */
         #normalMode {
-            background-color: transparent; /* グラデーションを使うので背景色は透明に */
-            background-image: linear-gradient(to bottom, #DBEAFE, #BFDBFE); /* 薄い青から少し濃い青へのグラデーション */
-            border: 2px solid #2563EB; /* Tailwindのblue-600相当で少し濃い青の枠線 */
-            border-radius: 0.5rem; /* 角丸を維持するよ */
+            background-color: transparent; 
+            background-image: linear-gradient(to bottom, #DBEAFE, #BFDBFE); 
+            border: 2px solid #2563EB; 
+            border-radius: 0.5rem; 
         }
         #normalMode span {
-            color: #1D4ED8 !important; /* テキストの色（濃い青） */
+            color: #1D4ED8 !important; 
             text-shadow: none;
         }
 
-        /* ハードモードのスタイルにグラデーションと濃い枠線を追加するよ */
         #hardMode {
-            background-color: transparent; /* グラデーションを使うので背景色は透明に */
-            background-image: linear-gradient(to bottom, #FEE2E2, #FECACA); /* 薄い赤から少し濃い赤へのグラデーション */
-            border: 2px solid #DC2626; /* Tailwindのred-600相当で少し濃い赤の枠線 */
-            border-radius: 0.5rem; /* 角丸を維持するよ */
+            background-color: transparent; 
+            background-image: linear-gradient(to bottom, #FEE2E2, #FECACA);
+            border: 2px solid #DC2626;
+            border-radius: 0.5rem;
         }
         #hardMode span {
-            color: #B91C1C !important; /* テキストの色（濃い赤） */
+            color: #B91C1C !important; 
             text-shadow: none;
         }
 
-        /* クレイジーモードのボタンにギザギザの枠をCSSで生成するよ */
         #crazyMode {
-            /* 枠の中の色を#ba55d3に設定するよ */
             background-color: #ba55d3;
-            border-radius: 0; /* ギザギザにするので角丸は無効にするよ */
-            border: none; /* デフォルトのボーダーは不要 */
-            overflow: hidden; /* はみ出しを隠す */
-            /* padding: 10px; を削除したよ！これでdifficulty-buttonのp-6が適用されるよ */
-            box-sizing: border-box; /* パディングを含めて要素の幅を計算するよ */
+            border-radius: 0; 
+            border: none; 
+            overflow: hidden;
+            box-sizing: border-box; 
 
-            /* linear-gradientを組み合わせて四辺にギザギザの枠を作るよ */
             background-image:
-                /* 上辺のギザギザ */
                 linear-gradient(45deg, transparent 75%, #9400d3 75%, #7A00B0 100%),
                 linear-gradient(-45deg, transparent 75%, #9400d3 75%, #7A00B0 100%),
-                /* 下辺のギザギザ */
                 linear-gradient(45deg, #9400d3 0%, #7A00B0 25%, transparent 25%),
                 linear-gradient(-45deg, #9400d3 0%, #7A00B0 25%, transparent 25%),
-                /* 左辺のギザギザ */
                 linear-gradient(135deg, transparent 75%, #9400d3 75%, #7A00B0 100%),
                 linear-gradient(-135deg, transparent 75%, #9400d3 75%, #7A00B0 100%),
-                /* 右辺のギザギザ */
                 linear-gradient(135deg, #9400d3 0%, #7A00B0 25%, transparent 25%),
                 linear-gradient(-135deg, #9400d3 0%, #7A00B0 25%, transparent 25%);
 
-            /* ギザギザのサイズを設定するよ */
-            background-size: 20px 20px; /* ギザギザの1つの山と谷のサイズ */
+            background-size: 20px 20px; 
 
-            /* ギザギザの繰り返しと位置を設定するよ */
             background-repeat: repeat-x, repeat-x, repeat-x, repeat-x, repeat-y, repeat-y, repeat-y, repeat-y;
             background-position:
                 top left, top right, /* 上辺 */
@@ -96,10 +81,9 @@
                 top left, bottom left, /* 左辺 */
                 top right, bottom right; /* 右辺 */
         }
-        /* クレイジーモードのテキストの色を白に上書きするよ */
         #crazyMode span {
-            color: white !important; /* Tailwindのデフォルトを上書きするために!importantを使うよ */
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.7); /* 画像によっては影をつけてテキストを見やすくするよ */
+            color: white !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7); 
         }
     </style>
 </head>

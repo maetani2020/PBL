@@ -155,6 +155,23 @@
             box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
         }
 
+        /* ヒントボタンのスタイル */
+        .hint-button {
+            background: linear-gradient(to right, #6EE7B7, #34D399); /* 緑のグラデーション */
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(110, 231, 183, 0.3);
+            white-space: nowrap;
+        }
+        .hint-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(110, 231, 183, 0.4);
+        }
+
         /* ローディングインジケーター */
         .loading-indicator {
             display: flex;
@@ -197,7 +214,6 @@
             transform: translateY(0);
         }
 
-
         /* レスポンシブデザインの調整 */
         @media (max-width: 768px) {
             .status-bar {
@@ -217,8 +233,11 @@
             .my-message-input {
                 font-size: 1rem; /* 入力フォントサイズを小さく */
             }
-            .send-button {
+            .send-button, .hint-button { /* ヒントボタンもレスポンシブに */
                 width: 100%; /* ボタンを全幅に */
+            }
+            .flex-col.md\:flex-row {
+                flex-direction: column; /* 小画面ではボタンも縦並びにする */
             }
         }
     </style>
@@ -234,7 +253,7 @@
             </div>
             <!-- クレーム内容 -->
             <div class="complaint-text">
-                <span id="complaintText">＜クレーム内容＞</span> <!-- ここを仮置きに変更したよ！ -->
+                <span id="complaintText"></span> <!-- ここはJSで設定されるよ -->
             </div>
             <!-- 残りライフ -->
             <div class="life-icons" id="lifeIcons">
@@ -264,6 +283,7 @@
         <div class="flex flex-col md:flex-row gap-4">
             <textarea id="myMessageInput" class="my-message-input flex-grow" placeholder="ここにメッセージを入力..."></textarea>
             <button id="sendMessageButton" class="send-button">送信</button>
+            <button id="getHintButton" class="hint-button">✨ヒントをもらう</button> <!-- ヒントボタンを追加 -->
         </div>
     </div>
 
@@ -274,8 +294,9 @@
             const messageHistory = document.getElementById('messageHistory');
             const myMessageInput = document.getElementById('myMessageInput');
             const sendMessageButton = document.getElementById('sendMessageButton');
-            const complaintText = document.getElementById('complaintText');
+            const complaintTextDisplay = document.getElementById('complaintText'); // ID名を変更
             const loadingIndicator = document.getElementById('loadingIndicator');
+            const getHintButton = document.getElementById('getHintButton'); // ヒントボタンの要素を取得
 
             // Gemini APIキー（Canvas環境で自動的に設定されるため、ここでは空文字列）
             const API_KEY = "";
@@ -285,6 +306,19 @@
             let currentHP = 3;    // 初期HP
             let gameInterval;     // タイマーのインターバルID
             let chatHistory = []; // 会話履歴
+
+            // クレーム内容のリスト（複数追加できるように）
+            const complaintList = [
+                "髪の毛が入ってる！",
+                "注文したものと違う！",
+                "店員の態度が悪い！",
+                "商品が壊れている！",
+                "待ち時間が長すぎる！",
+                "味がまずい！",
+                "予約が取れていない！",
+                "隣の席がうるさい！"
+            ];
+            let currentComplaint = ""; // 現在のクレーム内容
 
             // 現在のURLからパスを構築するヘルパー関数
             function getRelativePath(targetFile) {
@@ -299,6 +333,7 @@
                 alertBox.className = `custom-alert`;
                 if (type === 'success') alertBox.style.backgroundColor = '#4CAF50';
                 else if (type === 'error') alertBox.style.backgroundColor = '#f44336';
+                else if (type === 'hint') alertBox.style.backgroundColor = '#34D399'; // ヒント用の色
                 else alertBox.style.backgroundColor = '#2196F3';
                 
                 alertBox.textContent = message;
@@ -308,7 +343,7 @@
                 setTimeout(() => {
                     alertBox.classList.remove('show');
                     alertBox.addEventListener('transitionend', () => alertBox.remove());
-                }, 3000);
+                }, 5000); // ヒントは少し長く表示
             }
 
             // メッセージを履歴に追加する関数
@@ -366,11 +401,12 @@
                 }
             }
 
-            // Gemini APIを使ってお客様のメッセージを生成する関数
+            // Gemini APIを使ってお客様のメッセージを生成する関数 (お客様の返信や初期メッセージ用)
             async function generateCustomerResponse() {
                 loadingIndicator.classList.remove('hidden');
                 sendMessageButton.disabled = true; // 送信ボタンを無効化
                 myMessageInput.disabled = true; // 入力欄を無効化
+                getHintButton.disabled = true; // ヒントボタンも無効化
 
                 try {
                     const payload = { contents: chatHistory };
@@ -400,14 +436,15 @@
                     loadingIndicator.classList.add('hidden');
                     sendMessageButton.disabled = false; // 送信ボタンを有効化
                     myMessageInput.disabled = false; // 入力欄を有効化
+                    getHintButton.disabled = false; // ヒントボタンを有効化
                     myMessageInput.focus(); // 入力欄にフォーカス
                 }
             }
 
-            // クレーム対応の結果をチェックする関数
+            // クレーム対応の結果をチェックする関数 (Geminiの返信を評価)
             function checkGameStatus(customerReply) {
                 const lowerCaseReply = customerReply.toLowerCase();
-                const negativeKeywords = ['まだ', 'さらに', '納得できない', '許せない', 'ふざけるな', 'ありえない', '謝罪だけ', '解決しない', '不満', '怒り'];
+                const negativeKeywords = ['まだ', 'さらに', '納得できない', '許せない', 'ふざけるな', 'ありえない', '謝罪だけ', '解決しない', '不満', '怒り', 'だめ'];
                 const positiveKeywords = ['ありがとうございます', '解決しました', '助かりました', '満足です', '納得しました', '感謝します', '良かったです'];
 
                 let isNegative = negativeKeywords.some(keyword => lowerCaseReply.includes(keyword));
@@ -432,14 +469,65 @@
                 return false;
             }
 
-            // 初期のお客様のメッセージをGeminiで生成して表示
-            async function initializeGameConversation() {
-                // 仮置きのクレーム内容を直接使うよ
-                const initialComplaint = complaintText.textContent; 
+            // Gemini APIを使ってヒントを生成し表示する関数
+            async function getGeminiHint() {
+                showAlert('ヒントを生成中...', 'info');
+                // ヒント用のchatHistoryをコピーして、元の会話履歴を汚さないようにする
+                let hintChatHistory = JSON.parse(JSON.stringify(chatHistory));
 
+                // ヒント用のプロンプトを追加
+                hintChatHistory.push({
+                    role: "user",
+                    parts: [{ text: `これまでの会話を踏まえて、現在のクレーム（${currentComplaint}）を解決するために、お客様にどのように返答すべきか、**具体的な返答内容ではなく、対応の方向性や考え方、返答のトーンについて**、簡潔にヒントを教えてください。例：「共感を示し、具体的な解決策を提案する」「丁寧な言葉遣いで、事実確認を行う」` }]
+                });
+
+                loadingIndicator.classList.remove('hidden');
+                sendMessageButton.disabled = true; // 送信ボタンを無効化
+                myMessageInput.disabled = true; // 入力欄を無効化
+                getHintButton.disabled = true; // ヒントボタンも無効化
+
+                try {
+                    const payload = { contents: hintChatHistory }; // ヒント用の会話履歴を使う
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const hintText = result.candidates[0].content.parts[0].text;
+                        showAlert(`✨ヒント: ${hintText}`, 'hint'); // ヒントとして表示
+                    } else {
+                        showAlert('ヒント生成に失敗しました...', 'error');
+                    }
+                } catch (error) {
+                    console.error('Gemini API呼び出しエラー (ヒント):', error);
+                    showAlert('ヒント生成中にエラーが発生しました。', 'error');
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                    sendMessageButton.disabled = false; // 送信ボタンを有効化
+                    myMessageInput.disabled = false; // 入力欄を有効化
+                    getHintButton.disabled = false; // ヒントボタンを有効化
+                    myMessageInput.focus(); // 入力欄にフォーカス
+                }
+            }
+
+
+            // ゲーム開始時の初期化
+            async function initializeGameConversation() {
+                // ランダムなクレーム内容を設定
+                currentComplaint = complaintList[Math.floor(Math.random() * complaintList.length)];
+                complaintTextDisplay.textContent = currentComplaint; // 画面に表示
+
+                // 初期プロンプトとしてクレーム内容を追加するよ
                 chatHistory.push({
                     role: "user",
-                    parts: [{ text: `あなたは非常に怒っているお客様です。以下のクレーム内容に対して、簡潔に、しかし不満が伝わる最初のメッセージを作成してください。クレーム内容：「${initialComplaint}」。今後のあなたの返信には、こちらがうまく対応できたかどうかがわかるように、「ありがとうございます」「解決しました」「満足です」などの肯定的な言葉、または「まだ」「納得できない」「許せない」などの否定的な言葉を明確に含めてください。` }]
+                    parts: [{ text: `あなたは非常に怒っているお客様です。以下のクレーム内容に対して、簡潔に、しかし不満が伝わる最初のメッセージを作成してください。クレーム内容：「${currentComplaint}」。今後のあなたの返信には、こちらがうまく対応できたかどうかがわかるように、「ありがとうございます」「解決しました」「満足です」などの肯定的な言葉、または「まだ」「納得できない」「許せない」などの否定的な言葉を明確に含めてください。` }]
                 });
 
                 const generatedMessage = await generateCustomerResponse();
@@ -477,6 +565,10 @@
                     showAlert('メッセージを入力してください！', 'info');
                 }
             });
+
+            // ヒントボタンがクリックされた時の処理だよ
+            getHintButton.addEventListener('click', getGeminiHint);
+
 
             // エンターキーでメッセージを送信できるようにするよ
             myMessageInput.addEventListener('keypress', (event) => {
