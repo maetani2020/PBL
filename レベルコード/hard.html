@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲーム画面</title>
+    <!-- Tailwind CSSを読み込むよ。これで見栄えがよくなるよ！ -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons (ハートなど) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* フォントを「Inter」に設定するよ。見やすいフォントだね */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0; /* 背景色を少し明るいグレーに */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* 画面いっぱいに表示されるようにするよ */
+            margin: 0;
+            padding: 20px; /* 少し余白を持たせるよ */
+            box-sizing: border-box; /* パディングを含めて要素の幅を計算するよ */
+            overflow: hidden; /* メインのbodyにはスクロールバーが出ないようにする */
+        }
+
+        /* ゲーム画面全体のコンテナ */
+        .game-container {
+            max-width: 900px; /* 最大幅を設定 */
+            width: 100%;
+            background-color: #ffffff; /* 背景は白に */
+            border-radius: 1.5rem; /* 角を丸くするよ */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); /* 影をつけて立体感を出すよ */
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* 要素間のスペース */
+            height: 90vh; /* 画面高さの90%に固定するよ */
+            min-height: 500px; /* 最小高さを設定して小さくなりすぎないようにする */
+        }
+
+        /* 画面上部のステータスバー */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            background-color: #f8fafc; /* 薄いグレーの背景 */
+            border-radius: 0.75rem;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* 軽い内側の影 */
+        }
+
+        /* 時間とクレーム内容のスタイル */
+        .timer, .complaint-text {
+            font-size: 1.5rem; /* 大きめのフォントサイズ */
+            font-weight: bold;
+            color: #334155; /* 濃いめのグレー */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ライフアイコンのスタイル */
+        .life-icons {
+            display: flex;
+            gap: 0.5rem;
+            color: #ef4444; /* 赤いハート */
+            font-size: 1.75rem; /* ハートのサイズ */
+        }
+
+        /* お客様表示エリア */
+        .customer-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+            height: 180px; /* お客様エリアの高さ固定 */
+            flex-shrink: 0; /* 縮まないようにする */
+        }
+
+        /* お客様アイコン */
+        .customer-icon {
+            font-size: 6rem; /* 大きめのアイコン */
+            color: #475569; /* ダークグレー */
+            margin-bottom: 1rem;
+        }
+
+        /* メッセージ表示エリア (履歴) */
+        .message-history {
+            flex-grow: 1; /* 残りのスペースを埋める */
+            background-color: #f0f9ff; /* 薄い水色の背景 */
+            border-radius: 1rem;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* 影 */
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* 縦方向にスクロール可能に */
+            scroll-behavior: smooth; /* スムーズスクロール */
+            gap: 0.75rem; /* メッセージ間のスペース */
+        }
+
+        .message-box {
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1; /* 薄いグレーの枠線 */
+            border-radius: 0.75rem;
+            padding: 1rem;
+            font-size: 1.125rem;
+            line-height: 1.6;
+            color: #334155;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0; /* メッセージボックスが縮まないように */
+        }
+        
+        .message-label {
+            font-weight: bold;
+            color: #64748b; /* ラベルの色 */
+            margin-bottom: 0.5rem;
+            display: block; /* ブロック要素にして下のテキストと区切る */
+        }
+
+        /* 自分のメッセージ入力エリア */
+        .my-message-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #94a3b8; /* 少し濃いグレーの枠線 */
+            border-radius: 0.75rem;
+            font-size: 1.125rem;
+            color: #334155;
+            resize: vertical; /* 縦方向のみリサイズ可能に */
+            min-height: 4rem; /* 最低限の高さ */
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .my-message-input:focus {
+            outline: none;
+            border-color: #3b82f6; /* フォーカス時に青い枠線 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* フォーカス時に影 */
+        }
+
+        /* 送信ボタン */
+        .send-button {
+            background: linear-gradient(to right, #3b82f6, #2563eb); /* 青いグラデーション */
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+            white-space: nowrap; /* ボタン内のテキストが改行されないように */
+        }
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        /* ヒントボタンのスタイル */
+        .hint-button {
+            background: linear-gradient(to right, #6EE7B7, #34D399); /* 緑のグラデーション */
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(110, 231, 183, 0.3);
+            white-space: nowrap;
+        }
+        .hint-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(110, 231, 183, 0.4);
+        }
+
+        /* ローディングインジケーター */
+        .loading-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1.125rem;
+            color: #64748b;
+            margin-top: 1rem;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* カスタムアラート（alert()の代替） */
+        .custom-alert {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+        .custom-alert.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        
+
+        /* レスポンシブデザインの調整 */
+        @media (max-width: 768px) {
+            .status-bar {
+                flex-direction: column; /* 縦並びにする */
+                gap: 0.75rem;
+                align-items: flex-start; /* 左寄せ */
+            }
+            .timer, .complaint-text, .life-icons {
+                font-size: 1.25rem; /* フォントサイズを少し小さく */
+            }
+            .customer-icon {
+                font-size: 4rem; /* アイコンサイズを小さく */
+            }
+            .message-box {
+                font-size: 1rem; /* メッセージフォントサイズを小さく */
+            }
+            .my-message-input {
+                font-size: 1rem; /* 入力フォントサイズを小さく */
+            }
+            .send-button, .hint-button { /* ヒントボタンもレスポンシブに */
+                width: 100%; /* ボタンを全幅に */
+            }
+            .flex-col.md\:flex-row {
+                flex-direction: column; /* 小画面ではボタンも縦並びにする */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- 画面上部のステータスバー -->
+        <div class="status-bar">
+            <!-- 残り時間 -->
+            <div class="timer">
+                <i class="far fa-clock"></i> <!-- 時計アイコン -->
+                <span id="gameTimer">5:00</span>
+            </div>
+            <!-- クレーム内容 -->
+            <div class="complaint-text">
+                <span id="complaintText"></span> <!-- ここはJSで設定されるよ -->
+            </div>
+            <!-- 残りライフ -->
+            <div class="life-icons" id="lifeIcons">
+                <!-- ハートアイコンはJavaScriptで制御するよ -->
+            </div>
+        </div>
+
+        <!-- お客様表示エリア -->
+        <div class="customer-area">
+            <!-- シンプルなお客様アイコン (顔と怒りマーク) -->
+            <i class="fas fa-frown customer-icon"></i> <!-- 眉をひそめた顔 -->
+            <p class="text-xl font-semibold text-gray-700">お客様</p>
+        </div>
+
+        <!-- メッセージ表示エリア (履歴) -->
+        <div class="message-history" id="messageHistory">
+            <!-- 初期のお客様のメッセージはスクリプトで追加するよ -->
+        </div>
+
+        <!-- ローディングインジケーター -->
+        <div class="loading-indicator hidden" id="loadingIndicator">
+            <div class="loading-spinner"></div>
+            <span>メッセージ生成中...</span>
+        </div>
+
+        <!-- 自分のメッセージ入力と送信ボタン -->
+        <div class="flex flex-col md:flex-row gap-4">
+            <textarea id="myMessageInput" class="my-message-input flex-grow" placeholder="ここにメッセージを入力..."></textarea>
+            <button id="sendMessageButton" class="send-button">送信</button>
+            <button id="getHintButton" class="hint-button">✨ヒントをもらう</button> <!-- ヒントボタンを追加 -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const gameTimerDisplay = document.getElementById('gameTimer');
+            const lifeIconsContainer = document.getElementById('lifeIcons');
+            const messageHistory = document.getElementById('messageHistory');
+            const myMessageInput = document.getElementById('myMessageInput');
+            const sendMessageButton = document.getElementById('sendMessageButton');
+            const complaintTextDisplay = document.getElementById('complaintText'); // ID名を変更
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const getHintButton = document.getElementById('getHintButton'); // ヒントボタンの要素を取得
+
+            // Gemini APIキー（Canvas環境で自動的に設定されるため、ここでは空文字列）
+            const API_KEY = "";
+
+            // ゲームの状態変数
+            let timeLeft = 5 * 60; // 5分 = 300秒
+            let currentHP = 3;    // 初期HP
+            let gameInterval;     // タイマーのインターバルID
+            let chatHistory = []; // 会話履歴
+
+            // クレーム内容のリスト（複数追加できるように）
+            const complaintList = [
+                "髪の毛が入ってる！",
+                "注文したものと違う！",
+                "店員の態度が悪い！",
+                "商品が壊れている！",
+                "待ち時間が長すぎる！",
+                "味がまずい！",
+                "予約が取れていない！",
+                "隣の席がうるさい！"
+            ];
+            let currentComplaint = ""; // 現在のクレーム内容
+
+            // 現在のURLからパスを構築するヘルパー関数
+            function getRelativePath(targetFile) {
+                const currentPath = window.location.pathname;
+                const currentDirectory = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+                return window.location.origin + currentDirectory + targetFile;
+            }
+
+            // カスタムアラート表示関数
+            function showAlert(message, type = 'info') {
+                const alertBox = document.createElement('div');
+                alertBox.className = `custom-alert`;
+                if (type === 'success') alertBox.style.backgroundColor = '#4CAF50';
+                else if (type === 'error') alertBox.style.backgroundColor = '#f44336';
+                else if (type === 'hint') alertBox.style.backgroundColor = '#34D399'; // ヒント用の色
+                else alertBox.style.backgroundColor = '#2196F3';
+                
+                alertBox.textContent = message;
+                document.body.appendChild(alertBox);
+
+                setTimeout(() => alertBox.classList.add('show'), 10);
+                setTimeout(() => {
+                    alertBox.classList.remove('show');
+                    alertBox.addEventListener('transitionend', () => alertBox.remove());
+                }, 5000); // ヒントは少し長く表示
+            }
+
+            // メッセージを履歴に追加する関数
+            function addMessageToHistory(sender, message) {
+                const messageBox = document.createElement('div');
+                messageBox.className = 'message-box';
+
+                const labelSpan = document.createElement('span');
+                labelSpan.className = 'message-label';
+                labelSpan.textContent = `${sender}:`; 
+
+                const messageSpan = document.createElement('span');
+                messageSpan.textContent = message;
+
+                messageBox.appendChild(labelSpan);
+                messageBox.appendChild(messageSpan);
+                messageHistory.appendChild(messageBox);
+
+                // スクロールバーを一番下まで移動
+                messageHistory.scrollTop = messageHistory.scrollHeight;
+            }
+
+            // HP表示を更新する関数
+            function updateLifeIcons() {
+                lifeIconsContainer.innerHTML = ''; // 一度全部消す
+                for (let i = 0; i < currentHP; i++) {
+                    const heartIcon = document.createElement('i');
+                    heartIcon.className = 'fas fa-heart';
+                    lifeIconsContainer.appendChild(heartIcon);
+                }
+                // HPが0になったらゲームオーバー
+                if (currentHP <= 0) {
+                    clearInterval(gameInterval); // タイマーを停止
+                    showAlert('HPが0になりました！ゲームオーバー...', 'error');
+                    setTimeout(() => {
+                        window.location.href = getRelativePath('game_over.html');
+                    }, 1500); // 少し待ってから遷移
+                }
+            }
+
+            // タイマーを更新する関数
+            function updateTimer() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                gameTimerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(gameInterval); // タイマーを停止
+                    showAlert('時間切れ！ゲームオーバー...', 'error');
+                    setTimeout(() => {
+                        window.location.href = getRelativePath('game_over.html');
+                    }, 1500); // 少し待ってから遷移
+                } else {
+                    timeLeft--;
+                }
+            }
+
+            // Gemini APIを使ってお客様のメッセージを生成する関数 (お客様の返信や初期メッセージ用)
+            async function generateCustomerResponse() {
+                loadingIndicator.classList.remove('hidden');
+                sendMessageButton.disabled = true; // 送信ボタンを無効化
+                myMessageInput.disabled = true; // 入力欄を無効化
+                getHintButton.disabled = true; // ヒントボタンも無効化
+
+                try {
+                    const payload = { contents: chatHistory };
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        return text;
+                    } else {
+                        showAlert('お客様のメッセージ生成に失敗しました...', 'error');
+                        return '申し訳ございません、メッセージを生成できませんでした。';
+                    }
+                } catch (error) {
+                    console.error('Gemini API呼び出しエラー:', error);
+                    showAlert('メッセージ生成中にエラーが発生しました。', 'error');
+                    return 'エラーによりメッセージを生成できませんでした。';
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                    sendMessageButton.disabled = false; // 送信ボタンを有効化
+                    myMessageInput.disabled = false; // 入力欄を有効化
+                    getHintButton.disabled = false; // ヒントボタンを有効化
+                    myMessageInput.focus(); // 入力欄にフォーカス
+                }
+            }
+
+            // クレーム対応の結果をチェックする関数 (Geminiの返信を評価)
+            function checkGameStatus(customerReply) {
+                const lowerCaseReply = customerReply.toLowerCase();
+                const negativeKeywords = ['まだ', 'さらに', '納得できない', '許せない', 'ふざけるな', 'ありえない', '謝罪だけ', '解決しない', '不満', '怒り', 'だめ'];
+                const positiveKeywords = ['ありがとうございます', '解決しました', '助かりました', '満足です', '納得しました', '感謝します', '良かったです'];
+
+                let isNegative = negativeKeywords.some(keyword => lowerCaseReply.includes(keyword));
+                let isPositive = positiveKeywords.some(keyword => lowerCaseReply.includes(keyword));
+
+                if (isPositive) {
+                    // クレーム解決！
+                    clearInterval(gameInterval); // タイマーを停止
+                    showAlert('クレーム解決！完璧な対応だ！', 'success');
+                    setTimeout(() => {
+                        window.location.href = getRelativePath('game_clear.html');
+                    }, 1500);
+                    return true;
+                } else if (isNegative) {
+                    // 対応を間違えた
+                    currentHP--;
+                    updateLifeIcons();
+                    showAlert('対応を間違えた！HPが減りました...', 'error');
+                    return false;
+                }
+                // どちらでもない場合は、ゲーム続行（HPは減らない）
+                return false;
+            }
+
+            // Gemini APIを使ってヒントを生成し表示する関数
+            async function getGeminiHint() {
+                showAlert('ヒントを生成中...', 'info');
+                // ヒント用のchatHistoryをコピーして、元の会話履歴を汚さないようにする
+                let hintChatHistory = JSON.parse(JSON.stringify(chatHistory));
+
+                // ヒント用のプロンプトを追加
+                hintChatHistory.push({
+                    role: "user",
+                    parts: [{ text: `これまでの会話を踏まえて、現在のクレーム（${currentComplaint}）を解決するために、お客様にどのように返答すべきか、**具体的な返答内容ではなく、対応の方向性や考え方、返答のトーンについて**、簡潔にヒントを教えてください。例：「共感を示し、具体的な解決策を提案する」「丁寧な言葉遣いで、事実確認を行う」` }]
+                });
+
+                loadingIndicator.classList.remove('hidden');
+                sendMessageButton.disabled = true; // 送信ボタンを無効化
+                myMessageInput.disabled = true; // 入力欄を無効化
+                getHintButton.disabled = true; // ヒントボタンも無効化
+
+                try {
+                    const payload = { contents: hintChatHistory }; // ヒント用の会話履歴を使う
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const hintText = result.candidates[0].content.parts[0].text;
+                        showAlert(`✨ヒント: ${hintText}`, 'hint'); // ヒントとして表示
+                    } else {
+                        showAlert('ヒント生成に失敗しました...', 'error');
+                    }
+                } catch (error) {
+                    console.error('Gemini API呼び出しエラー (ヒント):', error);
+                    showAlert('ヒント生成中にエラーが発生しました。', 'error');
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                    sendMessageButton.disabled = false; // 送信ボタンを有効化
+                    myMessageInput.disabled = false; // 入力欄を有効化
+                    getHintButton.disabled = false; // ヒントボタンを有効化
+                    myMessageInput.focus(); // 入力欄にフォーカス
+                }
+            }
+
+
+            // ゲーム開始時の初期化
+            async function initializeGameConversation() {
+                // ランダムなクレーム内容を設定
+                currentComplaint = complaintList[Math.floor(Math.random() * complaintList.length)];
+                complaintTextDisplay.textContent = currentComplaint; // 画面に表示
+
+                // 初期プロンプトとしてクレーム内容を追加するよ
+                chatHistory.push({
+                    role: "user",
+                    parts: [{ text: `あなたは非常に怒っているお客様です。以下のクレーム内容に対して、簡潔に、しかし不満が伝わる最初のメッセージを作成してください。クレーム内容：「${currentComplaint}」。今後のあなたの返信には、こちらがうまく対応できたかどうかがわかるように、「ありがとうございます」「解決しました」「満足です」などの肯定的な言葉、または「まだ」「納得できない」「許せない」などの否定的な言葉を明確に含めてください。` }]
+                });
+
+                const generatedMessage = await generateCustomerResponse();
+                addMessageToHistory('お客様', generatedMessage); 
+                chatHistory.push({
+                    role: "model",
+                    parts: [{ text: generatedMessage }]
+                });
+            }
+
+            // 送信ボタンがクリックされた時の処理だよ
+            sendMessageButton.addEventListener('click', async () => {
+                const message = myMessageInput.value.trim();
+                if (message) {
+                    addMessageToHistory('自分', message);
+                    
+                    chatHistory.push({
+                        role: "user",
+                        parts: [{ text: message }]
+                    });
+
+                    myMessageInput.value = '';
+
+                    const customerReply = await generateCustomerResponse();
+                    addMessageToHistory('お客様', customerReply); 
+                    chatHistory.push({
+                        role: "model",
+                        parts: [{ text: customerReply }]
+                    });
+
+                    // 返信後にゲームの状態をチェック
+                    checkGameStatus(customerReply);
+
+                } else {
+                    showAlert('メッセージを入力してください！', 'info');
+                }
+            });
+
+            // ヒントボタンがクリックされた時の処理だよ
+            getHintButton.addEventListener('click', getGeminiHint);
+
+
+            // エンターキーでメッセージを送信できるようにするよ
+            myMessageInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    sendMessageButton.click();
+                }
+            });
+
+            // ゲームの初期化
+            updateLifeIcons(); // 初期HP表示
+            gameInterval = setInterval(updateTimer, 1000); // タイマー開始
+            initializeGameConversation(); // 会話開始
+        });
+
+        
+    </script>
+</body>
+</html>
