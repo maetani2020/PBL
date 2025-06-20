@@ -1,0 +1,10 @@
+/* レアメッセージ用のスタイル */
+.rare-message {
+    color: #000; /* 黒文字 */
+    text-shadow:
+        -1px -1px 0 #FFFF66,
+         1px -1px 0 #FFFF66,
+        -1px  1px 0 #FFFF66,
+         1px  1px 0 #FFFF66; /* 黄色の縁取り */
+}
+
