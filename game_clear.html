@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>完璧な対応だ！</title>
+    <title>対応成功</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <style>
         /* フォントを「Inter」に設定するよ。見やすいフォントだね */
         body {
@@ -38,24 +39,32 @@
         }
 
         /* 各ボタンのグラデーションと枠線の色を定義するよ */
-        /* 「違うパターンをやる」ボタンが削除されたので、そのスタイル定義も削除するよ */
-
         #changeDifficultyButton {
             --tw-gradient-from: #6366f1; /* indigo-500 */
             --tw-gradient-to: #4f46e5;   /* indigo-600 */
             --tw-border-color: #4338ca;  /* indigo-700 */
         }
 
-        #homeButton { /* IDはそのままだけど、テキストは「タイトルに戻る」になるよ */
+        #homeButton {
             --tw-gradient-from: #fb7185; /* rose-400 */
             --tw-gradient-to: #e11d48;   /* rose-600 */
             --tw-border-color: #be123c;  /* rose-700 */
+        }
+
+        /* game_clear.cssから持ってきたレアメッセージ用のスタイル */
+        .rare-message {
+            color: #000; /* 黒文字 */
+            text-shadow:
+                -1px -1px 0 #FFFF66,
+                 1px -1px 0 #FFFF66,
+                -1px  1px 0 #FFFF66,
+                 1px  1px 0 #FFFF66; /* 黄色の縁取り */
         }
     </style>
 </head>
 <body>
     <div class="container bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">完璧な対応だ！</h1>
+       <h1 id="randomMessage" class="text-3xl font-bold text-center text-gray-800 mb-8">完璧な対応だ！</h1>
 
         <div class="space-y-6">
             <button id="changeDifficultyButton" class="action-button w-full p-6 text-white font-bold text-2xl">
@@ -68,34 +77,52 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // 「違うパターンをやる」ボタンが削除されたので、その要素の取得とイベントリスナーも削除するよ
-            // const differentPatternButton = document.getElementById('differentPatternButton');
-            const changeDifficultyButton = document.getElementById('changeDifficultyButton');
-            const homeButton = document.getElementById('homeButton');
-            
-            // 「違うパターンをやる」ボタンが削除されたので、そのイベントリスナーも削除するよ
-            // differentPatternButton.addEventListener('click', () => {
-            //     console.log('「違うパターンをやる」が選択されました。');
-            //     // ここに「違うパターンをやる」時の処理を追加するよ
-            //     // 例: alert('新しいアプローチを試そう！');
-            // });
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // 🌟 ランダムメッセージの表示処理 (game_clear.jsのロジックを採用)
+    const messages = [
+        "完璧な対応ではないか！",
+        "素晴らしい.....いい対応だ",
+        "君...天才って呼ばれてる？",
+        "ふーん.....やるやん",
+        "店の評価が☆５になったぜ！",
+        "あなたがカスタマーの神ですか？",
+        "悪くない、プラス５点",
+        "店長「給料あげとくね」",
+        "「恐ろしく丁寧な対応。俺でなきゃ驚いてたね」",
+        "（ふっ、我ながら完璧な対応力だ)"
+    ];
 
-            // 「難易度を変える」ボタンがクリックされた時の処理だよ
-            changeDifficultyButton.addEventListener('click', () => {
-                console.log('「難易度を変える」が選択されました。');
-                // ここに「難易度を変える」時の処理を追加するよ
-                // 例: alert('難易度を変更！');
-            });
+    const rareMessage = "橋本社長も大喜び！";
+    const rareProbability = 0.005; // 0.5%の確率でレアメッセージが出現するよ
 
-            // 「タイトルに戻る」ボタンがクリックされた時の処理だよ
-            homeButton.addEventListener('click', () => {
-                console.log('「タイトルに戻る」が選択されました。');
-                // ここにタイトル画面に戻る処理を追加するよ
-                // 例: window.location.href = 'title.html';
-            });
-        });
-    </script>
+    const messageElement = document.getElementById('randomMessage');
+
+    // 確率でレアメッセージを表示するか、通常のメッセージを表示するか決めるよ
+    if (Math.random() < rareProbability) {
+        messageElement.textContent = rareMessage;
+        messageElement.classList.add('rare-message');
+    } else {
+        const randomIndex = Math.floor(Math.random() * messages.length);
+        messageElement.textContent = messages[randomIndex];
+        messageElement.classList.remove('rare-message'); // 通常メッセージの場合はレアスタイルを削除
+    }
+
+    // 🎮 ボタン処理
+    const changeDifficultyButton = document.getElementById('changeDifficultyButton');
+    const homeButton = document.getElementById('homeButton');
+
+    changeDifficultyButton.addEventListener('click', () => {
+        console.log('「難易度を変える」が選択されました。');
+        window.location.href = "Level.html";
+    });
+
+    homeButton.addEventListener('click', () => {
+        console.log('「タイトルに戻る」が選択されました。');
+        window.location.href = "start.html";
+    });
+});
+</script>
+
 </body>
 </html>

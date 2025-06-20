@@ -1,54 +1,60 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>お客様を怒らせてしまった...</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>対応失敗</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* フォントを「Inter」に設定するよ。見やすいフォントだね */
+        /* フォントを「Inter」に設定 */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f0f0; /* 背景色を少し明るくするよ */
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* 画面いっぱいに表示されるようにするよ */
+            min-height: 100vh;
             margin: 0;
-            padding: 20px; /* 少し余白を持たせるよ */
-            box-sizing: border-box; /* パディングを含めて要素の幅を計算するよ */
+            padding: 20px;
+            box-sizing: border-box;
         }
-        /* コンテナの最大幅を設定して、大きくなりすぎないようにするよ */
+
         .container {
             max-width: 600px;
             width: 100%;
         }
-        /* 各ボタンのスタイルを調整するよ */
+
         .action-button {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* ホバー時のアニメーション */
-            border-radius: 0.75rem; /* 角丸を適用 */
-            /* グラデーションと枠線を追加するために、Tailwindのクラスを使うよ */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border-radius: 0.75rem;
         }
+
         .action-button:hover {
-            transform: translateY(-3px); /* 少し上に浮き上がるようにするよ */
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* 影を濃くするよ */
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* レアメッセージ用スタイル */
+        .rare-message {
+            color: #000; /* 黒文字 */
+            text-shadow:
+                -1px -1px 0 #FFFF66,
+                 1px -1px 0 #FFFF66,
+                -1px  1px 0 #FFFF66,
+                 1px  1px 0 #FFFF66; /* 黄色の縁取り */
         }
     </style>
 </head>
 <body>
     <div class="container bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-        <!-- <div class="flex justify-start mb-6">
-            <button id="backButton" class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition duration-200 ease-in-out shadow-sm">
-                &lt; 戻る
-            </button>
-        </div> -->
-
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">お客様を怒らせてしまった...</h1>
-
+        <h1 id="randomMessage" class="text-3xl font-bold text-center text-gray-800 mb-8">対応失敗</h1>
         <div class="space-y-6">
+            
+             <a href="hard.html">
             <button id="doAgainButton" class="action-button w-full p-6 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold text-2xl shadow-md hover:from-blue-700 hover:to-blue-500 border-4 border-blue-700">
                 もう一度やる
             </button>
+            </a>
 
             <button id="differentPatternButton" class="action-button w-full p-6 bg-gradient-to-r from-orange-600 to-orange-400 text-white font-bold text-2xl shadow-md hover:from-orange-700 hover:to-orange-500 border-4 border-orange-700">
                 難易度を変更
@@ -62,38 +68,53 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const doAgainButton = document.getElementById('doAgainButton');
-            const differentPatternButton = document.getElementById('differentPatternButton');
-            const homeButton = document.getElementById('homeButton');
-            // backButtonの定義とイベントリスナーを削除したよ
-            // const backButton = document.getElementById('backButton');
+            const messages = [
+                "お客様を怒らせてしまった...",
+                "対応を間違えてしまった...",
+                "失敗は成功の基、リベンジするかい？",
+                "店長「給料下げとくね」",
+                "事態が悪化してしまった...",
+                "店の評価が☆１になってしまった...",
+                "「プレイヤー、謝罪しろ」",
+                "何がいけなかったのだろうか...？",
+                "０点だ、次！",
+                "(めんどくさいお客さんだぜ...)"
+            ];
 
-            // 「もう一度やる」ボタンがクリックされた時の処理だよ
-            doAgainButton.addEventListener('click', () => {
+            const rareMessage = "橋本社長も大慌て！";
+            const rareProbability = 0.005; // 0.5%
+
+            const messageElement = document.getElementById('randomMessage');
+
+            const isRare = Math.random() < rareProbability;
+            let selectedMessage;
+
+            if (isRare) {
+                selectedMessage = rareMessage;
+                messageElement.classList.add('rare-message');
+            } else {
+                const randomIndex = Math.floor(Math.random() * messages.length);
+                selectedMessage = messages[randomIndex];
+                messageElement.classList.remove('rare-message');
+            }
+
+            messageElement.textContent = selectedMessage;
+
+            // 各ボタンのイベント処理
+            document.getElementById('doAgainButton').addEventListener('click', () => {
                 console.log('「もう一度やる」が選択されました。');
-                // ここに「もう一度やる」時の処理を追加するよ
-                // 例: alert('もう一度挑戦！');
+                // 必要があればここに遷移や処理を追加
             });
 
-            // 「難易度を変更」ボタンがクリックされた時の処理だよ
-            differentPatternButton.addEventListener('click', () => {
+            document.getElementById('differentPatternButton').addEventListener('click', () => {
                 console.log('「難易度を変更」が選択されました。');
-                window.location.href = 'difficulty_settings.html'; // ここでページを移動するよ
+                window.location.href = "Level.html";
             });
 
-            // 「ホーム画面に戻る」ボタンがクリックされた時の処理だよ
-            homeButton.addEventListener('click', () => {
-                console.log('「ホーム画面に戻る」が選択されました。');
-                // ここにホーム画面に戻る処理を追加するよ
-                // 例: window.location.href = 'home.html';
+            document.getElementById('homeButton').addEventListener('click', () => {
+                console.log('「タイトルに戻る」が選択されました。');
+                window.location.href = "start.html";
             });
-
-            // 戻るボタンのイベントリスナーを削除したよ
-            // backButton.addEventListener('click', () => {
-            //     console.log('戻るボタンがクリックされました。');
-            //     // ここに前の画面に戻る処理を追加するよ
-            //     // 例: window.history.back();
-            // });
         });
     </script>
 </body>
