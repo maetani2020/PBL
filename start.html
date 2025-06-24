@@ -4,75 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>カスタマーマスター</title>
+  <link rel="stylesheet" href="start.css">
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #e5e7eb; /* やや淡いグレー */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 600px;
-      width: 100%;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      transition: background 0.5s ease;
-    }
-
-    /* 通常背景 */
-    .normal-background {
-      background-color: #ffffff;
-    }
-
-    /* レアな背景用（水色） */
-    .rare-background {
-        background-color: #ffffff;
-    }
-
-    /* 通常タイトル */
-    .main-title {
-      font-size: 2rem;
-      font-weight: bold;
-      text-align: center;
-      color: #000000;
-      margin-bottom: 2rem;
-    }
-
-    /* レアなタイトルテキスト用（薄い黄色） */
-    .rare-title {
-        color: #000000; /* 黒文字 */
-        font-weight: bold;
-        text-shadow:
-            -2px -2px 0 #FFFF66,
-            2px -2px 0 #FFFF66,
-            -2px  2px 0 #FFFF66,
-            2px  2px 0 #FFFF66;
-    }
-
-    .action-button {
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-      border-radius: 0.75rem;
-    }
-
-    .action-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-    }
-  </style>
 </head>
 <body>
   <div class="container normal-background" id="mainContainer">
     <h1 class="main-title" id="mainTitle">カ ス タ マ ー マ ス タ ー</h1>
 
     <div class="space-y-6">
-      <a href="difficulty_settings.html" class="block">
+      <a href="Level.html" class="block">
         <button id="startClaimButton" class="action-button w-full p-6 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold text-2xl shadow-md hover:from-blue-700 hover:to-blue-500 border-4 border-blue-700">
           クレーム対応開始！
         </button>
@@ -84,38 +24,6 @@
     </div>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const mainTitle = document.getElementById('mainTitle');
-      const container = document.getElementById('mainContainer');
-
-      const rareMessages = [
-        "橋本社長考案！カスタマーマスター",
-        "駿之介監督絶賛！カスタマーマスター",
-        "前谷プロが作りました👍カスタマーマスター",
-        "カスタマーYOUKOUマスター"
-      ];
-
-      const isRare = Math.random() < 0.05; // 5%
-
-      if (isRare) {
-        const message = rareMessages[Math.floor(Math.random() * rareMessages.length)];
-        mainTitle.textContent = message;
-        mainTitle.classList.add('rare-title');
-        container.classList.remove('normal-background');
-        container.classList.add('rare-background');
-        console.log("🎉 レア演出が表示されました！");
-      }
-
-      document.getElementById('startClaimButton').addEventListener('click', () => {
-        console.log('「クレーム対応開始！」が選択されました。');
-      });
-
-      document.getElementById('customerSettingsButton').addEventListener('click', () => {
-        console.log('「カスタマー設定」が選択されました。');
-        // window.location.href = 'customer_settings.html'; // 必要に応じて遷移
-      });
-    });
-  </script>
+  <script src="start.js"></script>
 </body>
 </html>
