@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲーム画面</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="status-bar">
+            <div class="flex items-center gap-2">
+                <button id="settingsButton" class="text-gray-500 hover:text-gray-700 text-2xl font-bold p-1 rounded-full hover:bg-gray-200 transition duration-200">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
+                <div class="timer">
+                    <i class="far fa-clock"></i> <span id="gameTimer">5:00</span>
+                </div>
+            </div>
+            <div class="complaint-text">
+                <span id="complaintText"></span> </div>
+            <div class="life-icons" id="lifeIcons">
+                </div>
+        </div>
+
+        <div class="customer-area">
+            <p class="text-xl font-semibold text-gray-700">お客様</p>
+            <img id="customerImage" class="customer-icon-image" alt="Customer Image">
+        </div>
+
+        <div class="message-history" id="messageHistory">
+            </div>
+
+        <div class="loading-indicator hidden" id="loadingIndicator">
+            <div class="loading-spinner"></div>
+            <span>メッセージ生成中...</span>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-4">
+            <textarea id="myMessageInput" class="my-message-input flex-grow" placeholder="ここにメッセージを入力..."></textarea>
+            <button id="sendMessageButton" class="send-button">送信</button>
+            <button id="getHintButton" class="hint-button">✨ヒントをもらう</button> </div>
+    </div>
+
+    <div id="settingsModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden z-50">
+        <div class="settings-modal">
+            <button id="closeSettings" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">設定</h2>
+
+            <div class="space-y-6">
+                <div>
+                    <label for="bgmVolume" class="block text-gray-700 text-lg font-semibold mb-2">BGM 音量</label>
+                    <div class="volume-control-group">
+                        <input type="range" id="bgmVolume" min="0" max="1" step="0.01" value="0.5" class="w-full h-3 bg-blue-100 rounded-lg appearance-none cursor-pointer range-lg accent-blue-500">
+                        <span id="bgmVolumeDisplay" class="volume-value">50</span>
+                    </div>
+                </div>
+                <div>
+                    <label for="seVolume" class="block text-gray-700 text-lg font-semibold mb-2">SE 音量</label>
+                    <div class="volume-control-group">
+                        <input type="range" id="seVolume" min="0" max="1" step="0.01" value="0.5" class="w-full h-3 bg-blue-100 rounded-lg appearance-none cursor-pointer range-lg accent-blue-500">
+                        <span id="seVolumeDisplay" class="volume-value">50</span>
+                    </div>
+                </div>
+                <button id="giveUpButton" class="w-full py-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition duration-200 shadow-md">
+                    あきらめる
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/gamescript.js"></script>
+</body>
+</html>
