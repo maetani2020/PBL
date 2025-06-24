@@ -1,0 +1,59 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #e5e7eb; /* やや淡いグレー */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 600px;
+  width: 100%;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: background 0.5s ease;
+}
+
+/* 通常背景 */
+.normal-background {
+  background-color: #ffffff;
+}
+
+/* レアな背景用（水色） */
+.rare-background {
+    background-color: #ffffff;
+}
+
+/* 通常タイトル */
+.main-title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  color: #000000;
+  margin-bottom: 2rem;
+}
+
+/* レアなタイトルテキスト用（薄い黄色） */
+.rare-title {
+    color: #000000; /* 黒文字 */
+    font-weight: bold;
+    text-shadow:
+      -2px -2px 0 #FFFF66,
+      2px -2px 0 #FFFF66,
+      -2px  2px 0 #FFFF66,
+      2px  2px 0 #FFFF66;
+}
+
+.action-button {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border-radius: 0.75rem;
+}
+
+.action-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
