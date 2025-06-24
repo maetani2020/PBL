@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>対応失敗</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* フォントを「Inter」に設定 */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .action-button {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border-radius: 0.75rem;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* レアメッセージ用スタイル */
+        .rare-message {
+            color: #000; /* 黒文字 */
+            text-shadow:
+                -1px -1px 0 #FFFF66,
+                 1px -1px 0 #FFFF66,
+                -1px  1px 0 #FFFF66,
+                 1px  1px 0 #FFFF66; /* 黄色の縁取り */
+        }
+    </style>
+</head>
+<body>
+    <div class="container bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+        <h1 id="randomMessage" class="text-3xl font-bold text-center text-gray-800 mb-8">対応失敗</h1>
+        <div class="space-y-6">
+            
+             <a href="hard.html">
+            <button id="doAgainButton" class="action-button w-full p-6 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold text-2xl shadow-md hover:from-blue-700 hover:to-blue-500 border-4 border-blue-700">
+                もう一度やる
+            </button>
+            </a>
+
+             <a href="difficulty_settings.html">
+            <button id="differentPatternButton" class="action-button w-full p-6 bg-gradient-to-r from-orange-600 to-orange-400 text-white font-bold text-2xl shadow-md hover:from-orange-700 hover:to-orange-500 border-4 border-orange-700">
+                難易度を変更
+            </button>
+
+             <a href="start.html">
+            <button id="homeButton" class="action-button w-full p-6 bg-gradient-to-r from-purple-600 to-purple-400 text-white font-bold text-2xl shadow-md hover:from-purple-700 hover:to-purple-500 border-4 border-purple-700">
+                タイトルに戻る
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const messages = [
+                "お客様を怒らせてしまった...",
+                "対応を間違えてしまった...",
+                "失敗は成功の基、リベンジするかい？",
+                "店長「給料下げとくね」",
+                "事態が悪化してしまった...",
+                "店の評価が☆１になってしまった...",
+                "「プレイヤー、謝罪しろ」",
+                "何がいけなかったのだろうか...？",
+                "０点だ、次！",
+                "(めんどくさいお客さんだぜ...)"
+            ];
+
+            const rareMessage = "橋本社長も大慌て！";
+            const rareProbability = 0.005; // 0.5%
+
+            const messageElement = document.getElementById('randomMessage');
+
+            const isRare = Math.random() < rareProbability;
+            let selectedMessage;
+
+            if (isRare) {
+                selectedMessage = rareMessage;
+                messageElement.classList.add('rare-message');
+            } else {
+                const randomIndex = Math.floor(Math.random() * messages.length);
+                selectedMessage = messages[randomIndex];
+                messageElement.classList.remove('rare-message');
+            }
+
+            messageElement.textContent = selectedMessage;
+
+            // 各ボタンのイベント処理
+            document.getElementById('doAgainButton').addEventListener('click', () => {
+                console.log('「もう一度やる」が選択されました。');
+                // 必要があればここに遷移や処理を追加
+            });
+
+            document.getElementById('differentPatternButton').addEventListener('click', () => {
+                console.log('「難易度を変更」が選択されました。');
+                window.location.href = "Level.html";
+            });
+
+            document.getElementById('homeButton').addEventListener('click', () => {
+                console.log('「タイトルに戻る」が選択されました。');
+                window.location.href = "start.html";
+            });
+        });
+    </script>
+</body>
+</html>
