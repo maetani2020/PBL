@@ -1,0 +1,53 @@
+/* フォントを「Inter」に設定するよ。見やすいフォントだね */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f0f0; /* 背景色を少し明るくするよ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* 画面いっぱいに表示されるようにするよ */
+    margin: 0;
+    padding: 20px; /* 少し余白を持たせるよ */
+    box-sizing: border-box; /* パディングを含めて要素の幅を計算するよ */
+}
+/* コンテナの最大幅を設定して、大きすぎないようにするよ */
+.container {
+    max-width: 600px;
+    width: 100%;
+}
+/* 各ボタンのスタイルを調整するよ */
+.action-button {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* ホバー時のアニメーション */
+    border-radius: 0.75rem; /* 角丸を適用 */
+    /* グラデーションと枠線のためにカスタムスタイルを追加するよ */
+    background-image: linear-gradient(to right, var(--tw-gradient-from), var(--tw-gradient-to));
+    border: 2px solid var(--tw-border-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* デフォルトの影を少し強めるよ */
+}
+.action-button:hover {
+    transform: translateY(-3px); /* 少し上に浮き上がるようにするよ */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* ホバー時の影を濃くするよ */
+}
+
+/* 各ボタンのグラデーションと枠線の色を定義するよ */
+#changeDifficultyButton {
+    --tw-gradient-from: #6366f1; /* indigo-500 */
+    --tw-gradient-to: #4f46e5;   /* indigo-600 */
+    --tw-border-color: #4338ca;  /* indigo-700 */
+}
+
+#homeButton {
+    --tw-gradient-from: #fb7185; /* rose-400 */
+    --tw-gradient-to: #e11d48;   /* rose-600 */
+    --tw-border-color: #be123c;  /* rose-700 */
+}
+
+/* game_clear.cssから持ってきたレアメッセージ用のスタイル */
+.rare-message {
+    color: #000; /* 黒文字 */
+    text-shadow:
+        -1px -1px 0 #FFFF66,
+         1px -1px 0 #FFFF66,
+        -1px  1px 0 #FFFF66,
+         1px  1px 0 #FFFF66; /* 黄色の縁取り */
+}
